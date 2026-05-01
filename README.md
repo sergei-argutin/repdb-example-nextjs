@@ -49,8 +49,6 @@ translations, alternative & progression relations), see
 - [repdb-example-react-native](https://github.com/sergei-argutin/repdb-example-react-native)
 - [repdb-example-flutter](https://github.com/sergei-argutin/repdb-example-flutter)
 
-> Note: at first push these URLs may 404 until the sister repos ship.
-
 ## License
 
 MIT for the example code (`LICENSE`). Bundle data under CC-BY-NC 4.0
