@@ -51,8 +51,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               — preview bundle, CC-BY-NC 4.0.
             </p>
             <p>
-              Want the full 300+ exercise catalog with two visual styles, multilingual data,
-              and commercial license?{' '}
+              Want the full 400+ exercise catalog with two visual styles, transparent
+              backgrounds, animations, multilingual data, and a commercial license?{' '}
               <a
                 className="text-accent hover:text-accent-hover font-medium"
                 href="https://repdb.co/pricing"
