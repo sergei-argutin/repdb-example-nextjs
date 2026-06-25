@@ -20,23 +20,70 @@ export interface Exercise {
   instructions_es?: string[];
   images?: Partial<Record<ImageStyle, ImageVariant[]>>;
   animation?: boolean;
+  met?: number;
+}
+
+/** A muscle or equipment entry from the bundle's taxonomy. */
+export interface TaxonomyEntry {
+  name_en: string;
+  name_de?: string;
+  name_es?: string;
+  image?: string;
 }
 
 export interface Bundle {
   schema_version: number;
   locales: Locale[];
   exercises: Exercise[];
+  muscles?: Record<string, TaxonomyEntry>;
+  equipment?: Record<string, TaxonomyEntry>;
 }
 
 const BUNDLE = bundle as unknown as Bundle;
 
 export const EXERCISES = BUNDLE.exercises;
 export const LOCALES: Locale[] = BUNDLE.locales;
+export const MUSCLES = BUNDLE.muscles ?? {};
+export const EQUIPMENT = BUNDLE.equipment ?? {};
 
-export function exerciseImage(ex: Exercise, variant: ImageVariant): string | null {
-  return ex.images?.flat?.includes(variant)
-    ? `/images/flat/${ex.id}-${variant}.webp`
+export function exerciseImage(
+  ex: Exercise,
+  variant: ImageVariant,
+  style: ImageStyle = 'flat',
+): string | null {
+  return ex.images?.[style]?.includes(variant)
+    ? `/images/${style}/${ex.id}-${variant}.webp`
     : null;
+}
+
+/** True when the exercise ships both flat and classic stills (toggle-able). */
+export function hasBothStyles(ex: Exercise): boolean {
+  return Boolean(ex.images?.flat?.length && ex.images?.classic?.length);
+}
+
+function localized(entry: TaxonomyEntry | undefined, locale: Locale, fallback: string): string {
+  if (!entry) return fallback;
+  if (locale === 'de' && entry.name_de) return entry.name_de;
+  if (locale === 'es' && entry.name_es) return entry.name_es;
+  return entry.name_en;
+}
+
+export function muscleLabel(key: string, locale: Locale): string {
+  return localized(MUSCLES[key], locale, prettyEnum(key));
+}
+
+export function muscleIcon(key: string): string | null {
+  const img = MUSCLES[key]?.image;
+  return img ? `/images/muscles/${img}` : null;
+}
+
+export function equipmentLabel(key: string, locale: Locale): string {
+  return localized(EQUIPMENT[key], locale, prettyEnum(key));
+}
+
+export function equipmentIcon(key: string): string | null {
+  const img = EQUIPMENT[key]?.image;
+  return img ? `/images/equipment/${img}` : null;
 }
 
 export function exerciseAnimation(ex: Exercise): string | null {

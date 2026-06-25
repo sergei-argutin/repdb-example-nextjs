@@ -1,17 +1,21 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   EXERCISES,
   LOCALES,
   type Locale,
+  equipmentIcon,
+  equipmentLabel,
   exerciseAnimation,
-  exerciseImage,
   exerciseInstructions,
   exerciseName,
   findExercise,
+  hasBothStyles,
+  muscleIcon,
+  muscleLabel,
   prettyEnum,
 } from '@/lib/bundle';
+import { ExerciseFrames } from '@/components/ExerciseFrames';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 
 export function generateStaticParams() {
@@ -36,8 +40,6 @@ export default async function ExerciseDetail({ params, searchParams }: DetailPro
   const locale = resolveLocale(localeRaw);
   const name = exerciseName(ex, locale);
   const instructions = exerciseInstructions(ex, locale);
-  const start = exerciseImage(ex, 'start');
-  const peak = exerciseImage(ex, 'peak');
   const animation = exerciseAnimation(ex);
 
   return (
@@ -54,20 +56,20 @@ export default async function ExerciseDetail({ params, searchParams }: DetailPro
 
       <header className="space-y-3">
         <h1 className="text-4xl font-semibold tracking-tight">{name}</h1>
-        <div className="flex flex-wrap gap-1.5 text-xs">
+        <div className="flex flex-wrap items-center gap-1.5 text-xs">
           {ex.body_part && <Tag>{prettyEnum(ex.body_part)}</Tag>}
-          {ex.equipment && <Tag>{prettyEnum(ex.equipment)}</Tag>}
+          {ex.equipment && (
+            <EquipmentTag iconSrc={equipmentIcon(ex.equipment)} label={equipmentLabel(ex.equipment, locale)} />
+          )}
           {ex.difficulty && <Tag>{prettyEnum(ex.difficulty)}</Tag>}
           {ex.category && <Tag>{prettyEnum(ex.category)}</Tag>}
+          {typeof ex.met === 'number' && <Tag>MET · {ex.met}</Tag>}
         </div>
       </header>
 
       {animation && <AnimationFrame src={animation} alt={`${name} — animation`} />}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Frame label="Start" src={start} alt={`${name} — start`} />
-        <Frame label="Peak" src={peak} alt={`${name} — peak`} />
-      </div>
+      <ExerciseFrames id={ex.id} name={name} hasClassic={hasBothStyles(ex)} />
 
       {instructions.length > 0 && (
         <section className="space-y-3 rounded-xl border border-border-soft bg-surface p-5">
@@ -83,8 +85,8 @@ export default async function ExerciseDetail({ params, searchParams }: DetailPro
       )}
 
       <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <MuscleList title="Primary muscles" muscles={ex.primary_muscles} primary />
-        <MuscleList title="Secondary muscles" muscles={ex.secondary_muscles} />
+        <MuscleList title="Primary muscles" muscles={ex.primary_muscles} locale={locale} primary />
+        <MuscleList title="Secondary muscles" muscles={ex.secondary_muscles} locale={locale} />
       </section>
     </article>
   );
@@ -113,36 +115,27 @@ function AnimationFrame({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-function Frame({ label, src, alt }: { label: string; src: string | null; alt: string }) {
+function EquipmentTag({ iconSrc, label }: { iconSrc: string | null; label: string }) {
   return (
-    <figure className="rounded-xl border border-border-soft bg-surface overflow-hidden shadow-sm">
-      <div className="aspect-[4/3] flex items-center justify-center bg-sky-50 dark:bg-[color-mix(in_srgb,var(--surface-2)_92%,#dbeafe_8%)]">
-        {src ? (
-          <Image
-            src={src}
-            alt={alt}
-            width={688}
-            height={516}
-            className="object-contain w-full h-full p-4"
-          />
-        ) : (
-          <span className="text-xs text-muted">no image</span>
-        )}
-      </div>
-      <figcaption className="px-3 py-2 text-xs uppercase tracking-wider font-medium text-muted border-t border-border-soft">
-        {label}
-      </figcaption>
-    </figure>
+    <span className="inline-flex items-center gap-1.5 rounded-md border border-border-soft bg-surface text-foreground pl-1 pr-2 py-0.5">
+      {iconSrc && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={iconSrc} alt="" aria-hidden className="h-4 w-4 object-contain" />
+      )}
+      {label}
+    </span>
   );
 }
 
 function MuscleList({
   title,
   muscles,
+  locale,
   primary = false,
 }: {
   title: string;
   muscles?: string[];
+  locale: Locale;
   primary?: boolean;
 }) {
   if (!muscles?.length) return null;
@@ -150,18 +143,25 @@ function MuscleList({
     <div className="space-y-2 rounded-xl border border-border-soft bg-surface p-4">
       <h3 className="text-xs font-semibold uppercase tracking-wider text-muted">{title}</h3>
       <ul className="flex flex-wrap gap-1.5 text-xs">
-        {muscles.map((m) => (
-          <li
-            key={m}
-            className={
-              primary
-                ? 'rounded-md bg-accent/15 text-accent border border-accent/30 px-2 py-1'
-                : 'rounded-md bg-surface-2 text-foreground border border-border-soft px-2 py-1'
-            }
-          >
-            {prettyEnum(m)}
-          </li>
-        ))}
+        {muscles.map((m) => {
+          const icon = muscleIcon(m);
+          return (
+            <li
+              key={m}
+              className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 ${
+                primary
+                  ? 'bg-accent/15 text-accent border border-accent/30'
+                  : 'bg-surface-2 text-foreground border border-border-soft'
+              }`}
+            >
+              {icon && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={icon} alt="" aria-hidden className="h-4 w-4 object-contain" />
+              )}
+              {muscleLabel(m, locale)}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
