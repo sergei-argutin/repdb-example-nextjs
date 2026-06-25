@@ -6,7 +6,8 @@ A small Next.js 16 starter that browses 21 fitness exercises from the
 ## Features
 
 - Static-rendered exercise list with filter by body part, equipment, difficulty
-- Detail page per exercise with start + peak frames, instructions, and muscle data
+- Detail page per exercise with a looping animation, start + peak frames,
+  instructions, and muscle data
 - EN / DE / ES locale switch (translates the exercise data — UI is EN-only)
 
 ## Run
