@@ -19,6 +19,7 @@ export interface Exercise {
   instructions_de?: string[];
   instructions_es?: string[];
   images?: Partial<Record<ImageStyle, ImageVariant[]>>;
+  animation?: boolean;
 }
 
 export interface Bundle {
@@ -36,6 +37,10 @@ export function exerciseImage(ex: Exercise, variant: ImageVariant): string | nul
   return ex.images?.flat?.includes(variant)
     ? `/images/flat/${ex.id}-${variant}.webp`
     : null;
+}
+
+export function exerciseAnimation(ex: Exercise): string | null {
+  return ex.animation ? `/images/animations/${ex.id}.webp` : null;
 }
 
 export function exerciseName(ex: Exercise, locale: Locale): string {

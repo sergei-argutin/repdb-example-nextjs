@@ -5,6 +5,7 @@ import {
   EXERCISES,
   LOCALES,
   type Locale,
+  exerciseAnimation,
   exerciseImage,
   exerciseInstructions,
   exerciseName,
@@ -37,6 +38,7 @@ export default async function ExerciseDetail({ params, searchParams }: DetailPro
   const instructions = exerciseInstructions(ex, locale);
   const start = exerciseImage(ex, 'start');
   const peak = exerciseImage(ex, 'peak');
+  const animation = exerciseAnimation(ex);
 
   return (
     <article className="mx-auto max-w-5xl px-4 py-8 space-y-8">
@@ -59,6 +61,8 @@ export default async function ExerciseDetail({ params, searchParams }: DetailPro
           {ex.category && <Tag>{prettyEnum(ex.category)}</Tag>}
         </div>
       </header>
+
+      {animation && <AnimationFrame src={animation} alt={`${name} — animation`} />}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Frame label="Start" src={start} alt={`${name} — start`} />
@@ -91,6 +95,21 @@ function Tag({ children }: { children: React.ReactNode }) {
     <span className="rounded-md border border-border-soft bg-surface text-foreground px-2 py-0.5">
       {children}
     </span>
+  );
+}
+
+function AnimationFrame({ src, alt }: { src: string; alt: string }) {
+  return (
+    <figure className="rounded-xl border border-border-soft bg-surface overflow-hidden shadow-sm">
+      <div className="aspect-square mx-auto max-w-md flex items-center justify-center bg-sky-50 dark:bg-[color-mix(in_srgb,var(--surface-2)_92%,#dbeafe_8%)]">
+        {/* Plain <img> on purpose: next/image would re-encode and drop the animation. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={alt} className="object-contain w-full h-full p-4" />
+      </div>
+      <figcaption className="px-3 py-2 text-xs uppercase tracking-wider font-medium text-muted border-t border-border-soft">
+        Animation · looping
+      </figcaption>
+    </figure>
   );
 }
 
