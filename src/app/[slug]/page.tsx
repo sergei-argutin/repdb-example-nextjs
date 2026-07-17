@@ -6,15 +6,16 @@ import {
   type Locale,
   equipmentIcon,
   equipmentLabel,
-  exerciseAnimation,
   exerciseInstructions,
   exerciseName,
   findExercise,
-  hasBothStyles,
+  flatVariants,
+  imageBase,
   muscleIcon,
   muscleLabel,
   prettyEnum,
 } from '@/lib/bundle';
+import { isSampleExercise, sampleAnimation } from '@/lib/samples';
 import { ExerciseFrames } from '@/components/ExerciseFrames';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 
@@ -40,7 +41,8 @@ export default async function ExerciseDetail({ params, searchParams }: DetailPro
   const locale = resolveLocale(localeRaw);
   const name = exerciseName(ex, locale);
   const instructions = exerciseInstructions(ex, locale);
-  const animation = exerciseAnimation(ex);
+  const isSample = isSampleExercise(ex.id);
+  const animation = isSample ? sampleAnimation(ex.id) : null;
 
   return (
     <article className="mx-auto max-w-5xl px-4 py-8 space-y-8">
@@ -69,7 +71,12 @@ export default async function ExerciseDetail({ params, searchParams }: DetailPro
 
       {animation && <AnimationFrame src={animation} alt={`${name} — animation`} />}
 
-      <ExerciseFrames id={ex.id} name={name} hasClassic={hasBothStyles(ex)} />
+      <ExerciseFrames
+        slug={imageBase(ex)}
+        name={name}
+        variants={flatVariants(ex)}
+        isSample={isSample}
+      />
 
       {instructions.length > 0 && (
         <section className="space-y-3 rounded-xl border border-border-soft bg-surface p-5">
@@ -108,8 +115,11 @@ function AnimationFrame({ src, alt }: { src: string; alt: string }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt={alt} className="object-contain w-full h-full p-4" />
       </div>
-      <figcaption className="px-3 py-2 text-xs uppercase tracking-wider font-medium text-muted border-t border-border-soft">
-        Animation · looping
+      <figcaption className="flex items-center justify-between gap-2 px-3 py-2 text-xs uppercase tracking-wider font-medium text-muted border-t border-border-soft">
+        <span>Animation · looping</span>
+        <span className="inline-flex items-center rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] font-medium normal-case tracking-wide text-accent">
+          Standard tier preview
+        </span>
       </figcaption>
     </figure>
   );

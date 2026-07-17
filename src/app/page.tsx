@@ -39,7 +39,7 @@ export default async function Home({ searchParams }: PageProps) {
         <div className="space-y-1">
           <h1 className="text-3xl font-semibold tracking-tight">Exercise Browser</h1>
           <p className="text-sm text-muted">
-            21 hand-picked exercises from the RepDB preview bundle. Filter, click in for details.
+            400 exercises from the RepDB free-tier dataset. Filter, click in for details.
           </p>
         </div>
         <LocaleSwitcher current={locale} />

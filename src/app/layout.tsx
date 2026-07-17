@@ -8,7 +8,7 @@ const geist = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Exercise Browser — built with RepDB',
   description:
-    '21 fitness exercises with start/peak images, instructions, and muscle data — sourced from the RepDB preview bundle.',
+    '400 fitness exercises with flat images, instructions, and muscle data — sourced from the RepDB free-tier dataset.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -48,11 +48,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               >
                 RepDB
               </a>{' '}
-              — preview bundle, CC-BY-NC 4.0.
+              — free tier, attribution required.
             </p>
             <p>
-              Want the full 400+ exercise catalog with two visual styles, transparent
-              backgrounds, animations, multilingual data, and a commercial license?{' '}
+              Want the full growing catalog with two visual styles, transparent
+              backgrounds, animations, 1024px images, and more?{' '}
               <a
                 className="text-accent hover:text-accent-hover font-medium"
                 href="https://repdb.co/pricing"

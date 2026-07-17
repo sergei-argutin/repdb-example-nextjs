@@ -1,8 +1,7 @@
 import bundle from '@/data/exercises.json';
 
 export type Locale = 'en' | 'de' | 'es';
-export type ImageStyle = 'flat' | 'classic';
-export type ImageVariant = 'start' | 'peak';
+export type ImageVariant = 'start' | 'peak' | 'main';
 
 export interface Exercise {
   id: string;
@@ -18,8 +17,10 @@ export interface Exercise {
   instructions_en?: string[];
   instructions_de?: string[];
   instructions_es?: string[];
-  images?: Partial<Record<ImageStyle, ImageVariant[]>>;
-  animation?: boolean;
+  /** Flat-style images shipped for this exercise: ["start","peak"] or ["main"]. */
+  images?: { flat?: ImageVariant[] };
+  /** When set, image files live under this other exercise's slug (shared render). */
+  image_alias?: string;
   met?: number;
 }
 
@@ -46,19 +47,22 @@ export const LOCALES: Locale[] = BUNDLE.locales;
 export const MUSCLES = BUNDLE.muscles ?? {};
 export const EQUIPMENT = BUNDLE.equipment ?? {};
 
-export function exerciseImage(
-  ex: Exercise,
-  variant: ImageVariant,
-  style: ImageStyle = 'flat',
-): string | null {
-  return ex.images?.[style]?.includes(variant)
-    ? `/images/${style}/${ex.id}-${variant}.webp`
-    : null;
+/** Base slug for image files — aliased exercises borrow another slug's renders. */
+export function imageBase(ex: Exercise): string {
+  return ex.image_alias ?? ex.id;
 }
 
-/** True when the exercise ships both flat and classic stills (toggle-able). */
-export function hasBothStyles(ex: Exercise): boolean {
-  return Boolean(ex.images?.flat?.length && ex.images?.classic?.length);
+/** Flat image variants this exercise ships (["start","peak"] or ["main"]). */
+export function flatVariants(ex: Exercise): ImageVariant[] {
+  return ex.images?.flat ?? [];
+}
+
+/** Best single thumbnail for cards: peak, else main, else the first variant. */
+export function exerciseThumb(ex: Exercise): string | null {
+  const variants = flatVariants(ex);
+  const pick =
+    variants.find((v) => v === 'peak') ?? variants.find((v) => v === 'main') ?? variants[0];
+  return pick ? `/images/flat/${imageBase(ex)}-${pick}.webp` : null;
 }
 
 function localized(entry: TaxonomyEntry | undefined, locale: Locale, fallback: string): string {
@@ -84,10 +88,6 @@ export function equipmentLabel(key: string, locale: Locale): string {
 export function equipmentIcon(key: string): string | null {
   const img = EQUIPMENT[key]?.image;
   return img ? `/images/equipment/${img}` : null;
-}
-
-export function exerciseAnimation(ex: Exercise): string | null {
-  return ex.animation ? `/images/animations/${ex.id}.webp` : null;
 }
 
 export function exerciseName(ex: Exercise, locale: Locale): string {

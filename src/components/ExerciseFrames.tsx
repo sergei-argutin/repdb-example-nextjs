@@ -1,54 +1,87 @@
 'use client';
 
 import { useState } from 'react';
-import type { ImageStyle } from '@/lib/bundle';
+import type { ImageVariant } from '@/lib/bundle';
+
+const VARIANT_LABELS: Record<ImageVariant, string> = {
+  start: 'Start',
+  peak: 'Peak',
+  main: 'Pose',
+};
 
 /**
- * Start/peak frames with a flat <-> classic style toggle.
- * `flat` is white-background; `classic` is a transparent matte-clay render.
- * Client component because the toggle is interactive; paths are derived from
- * the slug so no per-image wiring is needed.
+ * Flat exercise frames, with an optional Standard-tier teaser toggle.
+ *
+ * Every exercise ships flat (white-background) frames — either a start/peak
+ * pair or a single `main` pose. For the handful of `isSample` exercises we also
+ * ship paid-tier stills (transparent matte-clay) under /images/samples/, and a
+ * "Flat / Standard" toggle plus a "Standard tier preview" badge appears.
+ * Non-sample exercises render flat only, no toggle.
+ *
+ * `slug` is the image base slug (already alias-resolved by the caller). Sample
+ * exercises are never aliased, so the samples/ path always uses this slug too.
  */
 export function ExerciseFrames({
-  id,
+  slug,
   name,
-  hasClassic,
+  variants,
+  isSample,
 }: {
-  id: string;
+  slug: string;
   name: string;
-  hasClassic: boolean;
+  variants: ImageVariant[];
+  isSample: boolean;
 }) {
-  const [style, setStyle] = useState<ImageStyle>('flat');
-  const active = hasClassic ? style : 'flat';
+  const [showSample, setShowSample] = useState(false);
+  const dir = isSample && showSample ? 'samples' : 'flat';
+  const frames = variants.length ? variants : (['main'] as ImageVariant[]);
+  const single = frames.length === 1;
 
   return (
     <div className="space-y-3">
-      {hasClassic && (
-        <div className="flex items-center gap-2">
+      {isSample && (
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs uppercase tracking-wider text-muted">Style</span>
           <div className="inline-flex rounded-lg border border-border-soft bg-surface p-0.5 text-xs">
-            {(['flat', 'classic'] as const).map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setStyle(s)}
-                aria-pressed={active === s}
-                className={`rounded-md px-3 py-1 capitalize transition ${
-                  active === s
-                    ? 'bg-accent text-white font-medium'
-                    : 'text-muted hover:text-foreground'
-                }`}
-              >
-                {s}
-              </button>
-            ))}
+            {(
+              [
+                ['flat', 'Flat'],
+                ['samples', 'Standard'],
+              ] as const
+            ).map(([value, label]) => {
+              const activeToggle = value === dir;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setShowSample(value === 'samples')}
+                  aria-pressed={activeToggle}
+                  className={`rounded-md px-3 py-1 transition ${
+                    activeToggle
+                      ? 'bg-accent text-white font-medium'
+                      : 'text-muted hover:text-foreground'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
+          <span className="inline-flex items-center rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-accent">
+            Standard tier preview
+          </span>
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Frame label="Start" src={`/images/${active}/${id}-start.webp`} alt={`${name} — start`} />
-        <Frame label="Peak" src={`/images/${active}/${id}-peak.webp`} alt={`${name} — peak`} />
+      <div className={`grid gap-4 ${single ? 'grid-cols-1 max-w-md' : 'grid-cols-1 sm:grid-cols-2'}`}>
+        {frames.map((v) => (
+          <Frame
+            key={v}
+            label={VARIANT_LABELS[v] ?? v}
+            src={`/images/${dir}/${slug}-${v}.webp`}
+            alt={`${name} — ${VARIANT_LABELS[v] ?? v}`}
+          />
+        ))}
       </div>
     </div>
   );
