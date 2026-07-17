@@ -9,6 +9,7 @@ import {
 import { ExerciseCard } from '@/components/ExerciseCard';
 import { FilterBar } from '@/components/FilterBar';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
+import { SamplePreview } from '@/components/SamplePreview';
 
 interface PageProps {
   searchParams: Promise<{
@@ -69,6 +70,8 @@ export default async function Home({ searchParams }: PageProps) {
           ))}
         </ul>
       )}
+
+      <SamplePreview />
     </div>
   );
 }

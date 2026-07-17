@@ -2,38 +2,35 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 /**
- * Standard-tier teaser assets.
+ * Paid-tier preview animations.
  *
- * The free tier ships flat images only. A handful of exercises additionally get
- * paid-tier sample stills (and one animation) under `public/images/samples/`,
- * shown as an upgrade teaser. The set is DERIVED from the files present at build
- * time — drop `<slug>-start.webp` in there and it lights up, no code change.
+ * The free tier ships flat images only. `public/images/samples/` holds a small
+ * set of looping animation webps — the exact clips shown on repdb.co — provided
+ * so you can evaluate the paid tiers. They are NOT tied to specific free-tier
+ * exercises. The list is DERIVED from the files present at build time: drop a
+ * `<slug>.webp` in there and it shows up in the gallery, no code change.
  */
 
 const SAMPLES_DIR = path.join(process.cwd(), 'public', 'images', 'samples');
 
-function readSampleSlugs(): Set<string> {
+export interface SampleAnimation {
+  slug: string;
+  src: string;
+}
+
+function readSampleAnimations(): SampleAnimation[] {
   try {
-    const slugs = new Set<string>();
-    for (const file of fs.readdirSync(SAMPLES_DIR)) {
-      const m = file.match(/^(.+)-start\.webp$/);
-      if (m) slugs.add(m[1]);
-    }
-    return slugs;
+    return fs
+      .readdirSync(SAMPLES_DIR)
+      .filter((file) => file.endsWith('.webp'))
+      .sort()
+      .map((file) => ({
+        slug: file.replace(/\.webp$/, ''),
+        src: `/images/samples/${file}`,
+      }));
   } catch {
-    return new Set();
+    return [];
   }
 }
 
-export const SAMPLE_SLUGS = readSampleSlugs();
-
-export function isSampleExercise(id: string): boolean {
-  return SAMPLE_SLUGS.has(id);
-}
-
-/** Path to a sample looping animation (`<slug>.webp`), or null if none ships. */
-export function sampleAnimation(id: string): string | null {
-  if (!SAMPLE_SLUGS.has(id)) return null;
-  const file = path.join(SAMPLES_DIR, `${id}.webp`);
-  return fs.existsSync(file) ? `/images/samples/${id}.webp` : null;
-}
+export const SAMPLE_ANIMATIONS = readSampleAnimations();

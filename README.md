@@ -9,10 +9,9 @@ A small Next.js 16 starter that browses **400 fitness exercises** from the
 - Detail page per exercise with flat start/peak (or single-pose) frames,
   instructions, muscle data, equipment icon, and MET value
 - EN / DE / ES locale switch (translates the exercise data — UI is EN-only)
-- Standard-tier teaser: five sample exercises (deadlift, squat, bench-press,
-  mountain-climbers, kettlebell-swing) show a **Flat / Standard** style toggle
-  and, for mountain-climbers, a looping animation — the paid-tier look, marked
-  with a "Standard tier preview" badge
+- Paid-tier preview on the catalog page: a gallery of 5 looping animations —
+  the exact clips shown on repdb.co — badged "Standard tier preview —
+  evaluation only", linking to pricing
 
 ## Run
 
@@ -37,14 +36,15 @@ src/data/exercises.json        # the free-tier bundle (400 exercises), imported 
 public/images/flat/*.webp      # 745 flat webp (start/peak pairs + single-pose "main")
 public/images/muscles/*.webp   # 27 muscle icons
 public/images/equipment/*.webp # 46 equipment icons
-public/images/samples/*.webp   # paid-tier teaser stills + 1 animation (evaluation-only)
+public/images/samples/*.webp   # 5 paid-tier looping animations (evaluation-only)
 LICENSE-free.md                # RepDB Free Tier License for the bundle data & images
 LICENSE                        # MIT for the example code
 ```
 
-The `public/images/samples/` files are evaluation-only paid-tier assets; the
-five sample slugs are derived at build time from the `*-start.webp` files
-present there (see `src/lib/samples.ts`) — no hardcoded list.
+The `public/images/samples/` files are evaluation-only paid-tier assets: 5
+looping animations, the exact clips shown on repdb.co. The gallery list is
+derived at build time from the `.webp` files present there (see
+`src/lib/samples.ts`) — no hardcoded list.
 
 ## Data & license
 
