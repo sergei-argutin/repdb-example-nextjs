@@ -58,6 +58,8 @@ export function SamplePreview() {
                 <img
                   src={src}
                   alt={`${titleize(slug)} — looping animation`}
+                  loading="lazy"
+                  decoding="async"
                   className="object-contain w-full h-full p-2"
                 />
               </div>
