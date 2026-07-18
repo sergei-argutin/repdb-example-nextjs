@@ -3,6 +3,11 @@
 A small Next.js 16 starter that browses **400 fitness exercises** from the
 [RepDB free-tier dataset](https://repdb.co/free-exercise-dataset).
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsergei-argutin%2Frepdb-example-nextjs&project-name=repdb-fitness-starter&repository-name=repdb-fitness-starter)
+
+The starter has no environment variables or external API dependency. The
+exercise JSON and WebP assets are vendored, so the Vercel deploy works as-is.
+
 ## Features
 
 - Static-rendered exercise list with filter by body part, equipment, difficulty
