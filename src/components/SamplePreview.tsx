@@ -8,9 +8,9 @@ function titleize(slug: string): string {
  * Paid-tier preview gallery.
  *
  * Renders the looping sample animations shipped in /images/samples/ — the exact
- * clips shown on repdb.co. These are evaluation-only assets, not part of the
- * free-tier exercises, so they live here on the catalog page rather than on any
- * individual exercise. The set is derived from the files at build time.
+ * clips shown on repdb.co. Not part of the free-tier exercises, so they live
+ * here on the catalog page rather than on any individual exercise. The set is
+ * derived from the files at build time.
  */
 export function SamplePreview() {
   if (SAMPLE_ANIMATIONS.length === 0) return null;
@@ -22,11 +22,12 @@ export function SamplePreview() {
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-lg font-semibold tracking-tight">Paid tier preview</h2>
             <span className="inline-flex items-center rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-accent">
-              Standard tier preview — evaluation only
+              Standard tier preview
             </span>
           </div>
           <p className="text-sm text-muted">
-            The paid tiers add looping animations — the exact clips shown on{' '}
+            The Standard tier adds looping animations like this for most exercises — the
+            exact clips shown on{' '}
             <a
               className="text-foreground hover:text-accent underline underline-offset-2"
               href="https://repdb.co"
@@ -35,7 +36,7 @@ export function SamplePreview() {
             >
               repdb.co
             </a>
-            . These samples are for evaluation only.
+            .
           </p>
         </div>
         <a
